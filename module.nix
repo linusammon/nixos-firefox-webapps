@@ -36,7 +36,33 @@ let
       };
       profilePrefs = lib.mkOption {
         type = lib.types.lines;
-        default = "";
+        default = ''
+          user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
+          user_pref("browser.cache.disk.enable", false);
+          user_pref("browser.cache.memory.enable", true);
+          user_pref("media.videocontrols.picture-in-picture.video-toggle.enabled", false);
+          user_pref("browser.urlbar.autocomplete.enabled", false);
+          user_pref("places.history.enabled", false);
+          user_pref("geo.enabled", false);
+          user_pref("browser.crashReports.enabled", false);
+          user_pref("dom.push.enabled", false);
+          user_pref("dom.webnotifications.enabled", false);
+          user_pref("extensions.enabled", false);
+          user_pref("extensions.pocket.enabled", false);
+          user_pref("extensions.formautofill.enabled", false);
+          user_pref("app.update.auto", false);
+          user_pref("app.update.enabled", false);
+          user_pref("app.update.silent", true);
+          user_pref("signon.rememberSignons", false);
+          user_pref("privacy.sanitize.sanitizeOnShutdown", true);
+          user_pref("privacy.sanitize.timeSpan", 0);
+          user_pref("privacy.clearOnShutdown.cookies", false);
+          user_pref("privacy.clearOnShutdown.history", true);
+          user_pref("privacy.clearOnShutdown.cache", true);
+          user_pref("privacy.clearOnShutdown.sessions", true);
+          user_pref("privacy.clearOnShutdown.offlineApps", true);
+          user_pref("privacy.clearOnShutdown.formdata", true);
+        '';
         description = "Additional Firefox preferences";
       };
       userChrome = lib.mkOption {
@@ -99,34 +125,7 @@ in
           {
             name = ".mozilla/firefox-webapps/${safeName}/user.js";
             value = {
-              text = ''
-                user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
-                user_pref("browser.cache.disk.enable", false);
-                user_pref("browser.cache.memory.enable", true);
-                user_pref("media.videocontrols.picture-in-picture.video-toggle.enabled", false);
-                user_pref("browser.urlbar.autocomplete.enabled", false);
-                user_pref("places.history.enabled", false);
-                user_pref("geo.enabled", false);
-                user_pref("browser.crashReports.enabled", false);
-                user_pref("dom.push.enabled", false);
-                user_pref("dom.webnotifications.enabled", false);
-                user_pref("extensions.enabled", false);
-                user_pref("extensions.pocket.enabled", false);
-                user_pref("extensions.formautofill.enabled", false);
-                user_pref("app.update.auto", false);
-                user_pref("app.update.enabled", false);
-                user_pref("app.update.silent", true);
-                user_pref("signon.rememberSignons", false);
-                user_pref("privacy.sanitize.sanitizeOnShutdown", true);
-                user_pref("privacy.sanitize.timeSpan", 0);
-                user_pref("privacy.clearOnShutdown.cookies", false);
-                user_pref("privacy.clearOnShutdown.history", true);
-                user_pref("privacy.clearOnShutdown.cache", true);
-                user_pref("privacy.clearOnShutdown.sessions", true);
-                user_pref("privacy.clearOnShutdown.offlineApps", true);
-                user_pref("privacy.clearOnShutdown.formdata", true);
-                ${app.profilePrefs}
-              '';
+              text = app.profilePrefs;
             };
           }
           {
