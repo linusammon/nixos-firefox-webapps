@@ -7,6 +7,8 @@
 let
   cfg = config.programs.firefox-webapps;
 
+  mkSafeName = name: builtins.replaceStrings [ " " ] [ "_" ] name;
+
   webAppType = lib.types.submodule {
     options = {
       name = lib.mkOption {
@@ -25,7 +27,7 @@ let
       comment = lib.mkOption {
         type = lib.types.str;
         default = "";
-        description = " Desktop entry description";
+        description = "Desktop entry description";
       };
       categories = lib.mkOption {
         type = lib.types.listOf lib.types.str;
@@ -72,59 +74,69 @@ in
   config = lib.mkIf cfg.enable {
     home.packages = map (
       app:
+      let
+        safeName = mkSafeName app.name;
+      in
       pkgs.makeDesktopItem {
-        inherit (app) name comment categories;
+        name = safeName;
+        inherit (app) comment;
         desktopName = app.name;
         exec = "${pkgs.firefox}/bin/firefox --profile .mozilla/firefox-webapps/${app.name} --name ${app.name}-WebApp ${app.url}";
         terminal = false;
         type = "Application";
         icon = if app.icon != null then app.icon else "firefox";
-        startupWMClass = "${lib.toLower app.name}-webapp";
+        startupWMClass = "${lib.toLower safeName}-webapp";
       }
     ) cfg.webApps;
 
     home.file = builtins.listToAttrs (
-      builtins.concatMap (app: [
-        {
-          name = ".mozilla/firefox-webapps/${app.name}/user.js";
-          value = {
-            text = ''
-              user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
-              user_pref("browser.cache.disk.enable", false);
-              user_pref("browser.cache.memory.enable", true);
-              user_pref("media.videocontrols.picture-in-picture.video-toggle.enabled", false);
-              user_pref("browser.urlbar.autocomplete.enabled", false);
-              user_pref("places.history.enabled", false);
-              user_pref("geo.enabled", false);
-              user_pref("browser.crashReports.enabled", false);
-              user_pref("dom.push.enabled", false);
-              user_pref("dom.webnotifications.enabled", false);
-              user_pref("extensions.enabled", false);
-              user_pref("extensions.pocket.enabled", false);
-              user_pref("extensions.formautofill.enabled", false);
-              user_pref("app.update.auto", false);
-              user_pref("app.update.enabled", false);
-              user_pref("app.update.silent", true);
-              user_pref("signon.rememberSignons", false);
-              user_pref("privacy.sanitize.sanitizeOnShutdown", true);
-              user_pref("privacy.sanitize.timeSpan", 0);
-              user_pref("privacy.clearOnShutdown.cookies", false);
-              user_pref("privacy.clearOnShutdown.history", true);
-              user_pref("privacy.clearOnShutdown.cache", true);
-              user_pref("privacy.clearOnShutdown.sessions", true);
-              user_pref("privacy.clearOnShutdown.offlineApps", true);
-              user_pref("privacy.clearOnShutdown.formdata", true);
-              ${app.profilePrefs}
-            '';
-          };
-        }
-        {
-          name = ".mozilla/firefox-webapps/${app.name}/chrome/userChrome.css";
-          value = {
-            text = app.userChrome;
-          };
-        }
-      ]) cfg.webApps
+      builtins.concatMap (
+        app:
+        let
+          safeName = mkSafeName app.name;
+        in
+        [
+          {
+            name = ".mozilla/firefox-webapps/${safeName}/user.js";
+            value = {
+              text = ''
+                user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
+                user_pref("browser.cache.disk.enable", false);
+                user_pref("browser.cache.memory.enable", true);
+                user_pref("media.videocontrols.picture-in-picture.video-toggle.enabled", false);
+                user_pref("browser.urlbar.autocomplete.enabled", false);
+                user_pref("places.history.enabled", false);
+                user_pref("geo.enabled", false);
+                user_pref("browser.crashReports.enabled", false);
+                user_pref("dom.push.enabled", false);
+                user_pref("dom.webnotifications.enabled", false);
+                user_pref("extensions.enabled", false);
+                user_pref("extensions.pocket.enabled", false);
+                user_pref("extensions.formautofill.enabled", false);
+                user_pref("app.update.auto", false);
+                user_pref("app.update.enabled", false);
+                user_pref("app.update.silent", true);
+                user_pref("signon.rememberSignons", false);
+                user_pref("privacy.sanitize.sanitizeOnShutdown", true);
+                user_pref("privacy.sanitize.timeSpan", 0);
+                user_pref("privacy.clearOnShutdown.cookies", false);
+                user_pref("privacy.clearOnShutdown.history", true);
+                user_pref("privacy.clearOnShutdown.cache", true);
+                user_pref("privacy.clearOnShutdown.sessions", true);
+                user_pref("privacy.clearOnShutdown.offlineApps", true);
+                user_pref("privacy.clearOnShutdown.formdata", true);
+                ${app.profilePrefs}
+              '';
+            };
+          }
+          {
+            name = ".mozilla/firefox-webapps/${safeName}/chrome/userChrome.css";
+            value = {
+              text = app.userChrome;
+            };
+          }
+        ]
+      ) cfg.webApps
     );
 
     home.activation.cleanupFirefoxWebappProfiles = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
