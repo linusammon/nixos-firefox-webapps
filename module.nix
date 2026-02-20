@@ -7,7 +7,7 @@
 let
   cfg = config.programs.firefox-webapps;
 
-  mkSafeName = name: builtins.replaceStrings [ " " ] [ "_" ] name;
+  mkSafeName = name: builtins.replaceStrings [ " " ] [ "_" ] (lib.toLower name);
 
   webAppType = lib.types.submodule {
     options = {
@@ -111,7 +111,7 @@ in
         terminal = false;
         type = "Application";
         icon = if app.icon != null then app.icon else "firefox";
-        startupWMClass = "${lib.toLower safeName}-webapp";
+        startupWMClass = "${safeName}-webapp";
       }
     ) cfg.webApps;
 
