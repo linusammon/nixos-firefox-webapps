@@ -107,7 +107,7 @@ in
         name = safeName;
         inherit (app) comment;
         desktopName = app.name;
-        exec = "${pkgs.firefox}/bin/firefox --profile .mozilla/firefox-webapps/${safeName} --name ${app.name} ${app.url}";
+        exec = "${pkgs.firefox}/bin/firefox --profile .mozilla/firefox-webapps/${safeName} --name \"${app.name}\" \"${app.url}\"";
         terminal = false;
         type = "Application";
         icon = if app.icon != null then app.icon else "firefox";
