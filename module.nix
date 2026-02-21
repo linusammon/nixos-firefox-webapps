@@ -13,26 +13,26 @@ let
     options = {
       name = lib.mkOption {
         type = lib.types.str;
-        description = "Name of the web application";
+        description = "Application name shown in desktop menu.";
       };
       url = lib.mkOption {
         type = lib.types.str;
-        description = "URL to launch the application with";
+        description = "Full URL (including protocol) to open.";
       };
       icon = lib.mkOption {
         type = lib.types.nullOr lib.types.path;
         default = null;
-        description = "Path to icon file";
+        description = "Path to icon file. Falls back to Firefox icon.";
       };
       comment = lib.mkOption {
         type = lib.types.str;
         default = "";
-        description = "Desktop entry description";
+        description = "Short description/tooltip for the application.";
       };
       categories = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [ ];
-        description = "Desktop entry categories";
+        description = "XDG desktop menu categories (e.g. Network, Office).";
       };
       profilePrefs = lib.mkOption {
         type = lib.types.lines;
@@ -63,7 +63,7 @@ let
           user_pref("privacy.clearOnShutdown.offlineApps", true);
           user_pref("privacy.clearOnShutdown.formdata", true);
         '';
-        description = "Additional Firefox preferences";
+        description = "Firefox about:config preferences.";
       };
       userChrome = lib.mkOption {
         type = lib.types.lines;
@@ -72,7 +72,7 @@ let
           #nav-bar { visibility: collapse !important; }
           #titlebar { display: none !important; }
         '';
-        description = "Custom userChrome.css content";
+        description = "Firefox userChrome.css content.";
       };
     };
   };
@@ -84,7 +84,7 @@ in
     webApps = lib.mkOption {
       type = lib.types.listOf webAppType;
       default = [ ];
-      description = "List of web applications to create desktop entries for";
+      description = "List of web applications.";
       example = lib.literalExpression ''
         [
           {
