@@ -98,7 +98,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    home.packages = map (
+    home.packages = [ pkgs.firefox ] ++ map (
       app:
       let
         safeName = mkSafeName app.name;
