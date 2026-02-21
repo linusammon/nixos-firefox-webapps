@@ -139,7 +139,7 @@ in
     );
 
     home.activation.cleanupFirefoxWebappProfiles = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      firefoxProfilesDir="$HOME/.mozilla/firefox-webapps"
+      firefoxProfilesDir="${config.home.homeDirectory}/.mozilla/firefox-webapps"
       keepDirs="${lib.strings.concatStringsSep " " (map (app: mkSafeName app.name) cfg.webApps)}"
 
       if [ -d "$firefoxProfilesDir" ]; then
